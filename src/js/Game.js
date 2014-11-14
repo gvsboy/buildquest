@@ -1,6 +1,8 @@
 var React = require('react'),
-    Fiber = require('Fiber'),
-    TitleView = require('./views/Title');
+    Fiber = require('fiber'),
+    Player = require('./Player'),
+    TitleView = require('./views/Title'),
+    AreasView = require('./views/Areas');
 
 Game = Fiber.extend(function() {
 
@@ -16,7 +18,11 @@ Game = Fiber.extend(function() {
     },
 
     start: function(playerName) {
-      console.log('game begins! ', playerName);
+      this.player = new Player(playerName);
+      React.render(
+        <AreasView/>,
+        this._container
+      );
     }
 
   }

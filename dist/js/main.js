@@ -18543,8 +18543,10 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":30}],149:[function(require,module,exports){
 var React = require('react'),
-    Fiber = require('Fiber'),
-    TitleView = require('./views/Title');
+    Fiber = require('fiber'),
+    Player = require('./Player'),
+    TitleView = require('./views/Title'),
+    AreasView = require('./views/Areas');
 
 Game = Fiber.extend(function() {
 
@@ -18560,7 +18562,11 @@ Game = Fiber.extend(function() {
     },
 
     start: function(playerName) {
-      console.log('game begins! ', playerName);
+      this.player = new Player(playerName);
+      React.render(
+        React.createElement(AreasView, null),
+        this._container
+      );
     }
 
   }
@@ -18569,14 +18575,51 @@ Game = Fiber.extend(function() {
 
 module.exports = Game;
 
-},{"./views/Title":151,"Fiber":1,"react":148}],150:[function(require,module,exports){
+},{"./Player":150,"./views/Areas":152,"./views/Title":153,"fiber":1,"react":148}],150:[function(require,module,exports){
+var Fiber = require('fiber'),
+
+Player = Fiber.extend(function() {
+
+  return {
+
+    init: function(name) {
+      this.name = name;
+    }
+
+  }
+
+});
+
+module.exports = Player;
+
+},{"fiber":1}],151:[function(require,module,exports){
 var Game = require('./Game'),
     game = new Game(data);
 
-},{"./Game":149}],151:[function(require,module,exports){
+},{"./Game":149}],152:[function(require,module,exports){
+/** @jsx React.DOM */
 var React = require('react');
 
-TitleView = React.createClass({displayName: 'TitleView',
+var AreasView = React.createClass({
+
+    displayName: 'AreasView',
+
+    render: function () {
+        return (
+            React.createElement("div", null, "Areas")
+        );
+    }
+});
+
+module.exports = AreasView;
+
+},{"react":148}],153:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+
+TitleView = React.createClass({
+
+  displayName: 'TitleView',
 
   getInitialState: function() {
     return {disabled: true};
@@ -18614,4 +18657,4 @@ TitleView = React.createClass({displayName: 'TitleView',
 
 module.exports = TitleView;
 
-},{"react":148}]},{},[150]);
+},{"react":148}]},{},[151]);

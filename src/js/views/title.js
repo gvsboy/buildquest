@@ -1,6 +1,9 @@
+/** @jsx React.DOM */
 var React = require('react');
 
 TitleView = React.createClass({
+
+  displayName: 'TitleView',
 
   getInitialState: function() {
     return {disabled: true};

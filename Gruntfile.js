@@ -67,6 +67,9 @@ module.exports = function(grunt) {
     },
 
     browserify: {
+      options: {
+        transform: [require('grunt-react').browserify]
+      },
       dist: {
         files: {
           'dist/js/main.js': 'src/js/app.js'
@@ -82,6 +85,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-react');
 
   grunt.registerTask('default', [
     'clean',

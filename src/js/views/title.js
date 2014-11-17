@@ -22,12 +22,16 @@ TitleView = React.createClass({
     });
   },
 
+  componentWillUnmount: function() {
+    console.log('unmounting! ------');
+  },
+
   render: function() {
     return (
 
       <div id='title-view'>
-        <h1>{this.props.name}</h1>
-        <form id='form-name' className='pure-form' onSubmit={this.handleSubmit}>
+        <h1 className='animated zoomInDown'>{this.props.name}</h1>
+        <form id='form-name' className='pure-form animated fadeIn' onSubmit={this.handleSubmit}>
           <label htmlFor='input-name'>What&apos;s your name?</label>
           <input id='input-name' type='text' maxLength='50' onChange={this.validate}/>
           <button disabled={this.state.disabled} className='pure-button'>Let&apos;s Go!</button>

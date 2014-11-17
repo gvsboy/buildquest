@@ -75,6 +75,20 @@ module.exports = function(grunt) {
           'dist/js/main.js': 'src/js/app.js'
         }
       }
+    },
+
+    responsive_images: {
+      areas: {
+        options: {
+          quality: 60
+        },
+        files: [{
+          expand: true,
+          src: ['**.{jpg,gif,png}'],
+          cwd: 'data/_src/',
+          dest: 'data/images/'
+        }]
+      }
     }
 
   });
@@ -86,6 +100,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-react');
+  grunt.loadNpmTasks('grunt-responsive-images');
 
   grunt.registerTask('default', [
     'clean',
@@ -94,6 +109,10 @@ module.exports = function(grunt) {
     'bower_concat:js',
     'bower_concat:css',
     'browserify:dist'
+  ]);
+
+  grunt.registerTask('img', [
+    'responsive_images'
   ]);
 
 };

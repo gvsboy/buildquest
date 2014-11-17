@@ -12,13 +12,14 @@ Game = Fiber.extend(function() {
       this._data = data;
       this._container = document.body;
       React.render(
-        <TitleView name={data.questName} onSubmit={this.start}/>,
+        <TitleView name={data.questName} onSubmit={this.start.bind(this)}/>,
         this._container
       );
     },
 
     start: function(playerName) {
       this.player = new Player(playerName);
+      console.log(this);
       React.render(
         <AreasView/>,
         this._container

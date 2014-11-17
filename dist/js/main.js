@@ -18556,13 +18556,14 @@ Game = Fiber.extend(function() {
       this._data = data;
       this._container = document.body;
       React.render(
-        React.createElement(TitleView, {name: data.questName, onSubmit: this.start}),
+        React.createElement(TitleView, {name: data.questName, onSubmit: this.start.bind(this)}),
         this._container
       );
     },
 
     start: function(playerName) {
       this.player = new Player(playerName);
+      console.log(this);
       React.render(
         React.createElement(AreasView, null),
         this._container
@@ -18602,13 +18603,15 @@ var React = require('react');
 
 var AreasView = React.createClass({
 
-    displayName: 'AreasView',
+  displayName: 'AreasView',
 
-    render: function () {
-        return (
-            React.createElement("div", null, "Areas")
-        );
-    }
+  render: function() {
+    return (
+
+      React.createElement("div", null, "Areas")
+
+    );
+  }
 });
 
 module.exports = AreasView;
@@ -18638,12 +18641,16 @@ TitleView = React.createClass({
     });
   },
 
+  componentWillUnmount: function() {
+    console.log('unmounting! ------');
+  },
+
   render: function() {
     return (
 
       React.createElement("div", {id: "title-view"}, 
-        React.createElement("h1", null, this.props.name), 
-        React.createElement("form", {id: "form-name", className: "pure-form", onSubmit: this.handleSubmit}, 
+        React.createElement("h1", {className: "animated zoomInDown"}, this.props.name), 
+        React.createElement("form", {id: "form-name", className: "pure-form animated fadeIn", onSubmit: this.handleSubmit}, 
           React.createElement("label", {htmlFor: "input-name"}, "What's your name?"), 
           React.createElement("input", {id: "input-name", type: "text", maxLength: "50", onChange: this.validate}), 
           React.createElement("button", {disabled: this.state.disabled, className: "pure-button"}, "Let's Go!")

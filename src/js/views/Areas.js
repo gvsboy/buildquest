@@ -3,13 +3,15 @@ var React = require('react');
 
 var AreasView = React.createClass({
 
-    displayName: 'AreasView',
+  displayName: 'AreasView',
 
-    render: function () {
-        return (
-            <div>Areas</div>
-        );
-    }
+  render: function() {
+    return (
+
+      <div>Areas</div>
+
+    );
+  }
 });
 
 module.exports = AreasView;

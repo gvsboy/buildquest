@@ -26,19 +26,6 @@ module.exports = function(grunt) {
     },
 
     bower_concat: {
-      js: {
-        dest: 'dist/js/lib.js',
-        mainFiles: {
-          'jquery': 'dist/jquery.min.js',
-          'lodash': 'dist/lodash.min.js',
-          'fiber': 'src/fiber.min.js'
-        },
-        include: [
-          'jquery',
-          'lodash',
-          'fiber'
-        ]
-      },
       css: {
         dest: 'dist/css/lib.css',
         mainFiles: {
@@ -80,7 +67,16 @@ module.exports = function(grunt) {
     responsive_images: {
       areas: {
         options: {
-          quality: 60
+          quality: 60,
+          newFilesOnly: false,//FOR TESTING ONLY! Set to true when options are good.
+          sizes: [
+            {
+              name: 'large',
+              width: '320px',
+              height: '240px',
+              aspectRatio: false
+            }
+          ]
         },
         files: [{
           expand: true,
@@ -106,7 +102,6 @@ module.exports = function(grunt) {
     'clean',
     'sass',
     'concat',
-    'bower_concat:js',
     'bower_concat:css',
     'browserify:dist'
   ]);

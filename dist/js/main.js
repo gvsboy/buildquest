@@ -25353,7 +25353,7 @@ Game = Fiber.extend(function() {
     start: function(playerName) {
       this.player = new Player(playerName);
       React.render(
-        React.createElement(AreasView, {data: this._data.areas}),
+        React.createElement(AreasView, {data: this._data}),
         this._container
       );
     }
@@ -25388,21 +25388,44 @@ var Game = require('./Game'),
 },{"./Game":150}],153:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    IMAGE_BASE = '../data/images/{area}-large.jpg';
 
 var AreasView = React.createClass({
 
   displayName: 'AreasView',
 
+  handleClick: function(evt) {
+    var area = _.last(evt.currentTarget.href.split('/'));
+    evt.preventDefault();
+    console.log(evt.currentTarget.href, area);
+    console.log(evt);
+    console.log(evt.currentTarget);
+  },
+
   render: function() {
+
+    var self = this,
+        data = self.props.data;
 
     return (
 
       React.createElement("div", {id: "area-view"}, 
+        React.createElement("h1", null, data.goal, "!"), 
+        React.createElement("h2", null, "Where do you want to go?"), 
         React.createElement("ul", null, 
-          _.each(this.props.data, function(area) {
-            return React.createElement("li", {key: area.alias}, "woo");
-          }), ";"
+          _.map(data.areas, function(area) {
+
+            var alias = area.alias,
+                image = IMAGE_BASE.replace('{area}', alias);
+
+            return React.createElement("li", {key: alias, className: "animated bounceIn"}, 
+              React.createElement("a", {href: alias, onClick: self.handleClick}, 
+                React.createElement("span", null, area.name), 
+                React.createElement("img", {src: image, alt: area.name})
+              )
+            );
+          })
         )
       )
 

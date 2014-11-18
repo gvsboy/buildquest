@@ -20,7 +20,7 @@ Game = Fiber.extend(function() {
     start: function(playerName) {
       this.player = new Player(playerName);
       React.render(
-        <AreasView data={this._data.areas}/>,
+        <AreasView data={this._data}/>,
         this._container
       );
     }

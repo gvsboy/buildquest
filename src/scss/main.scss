@@ -21,3 +21,37 @@ body {
 #form-name {
   animation-delay: 1.0s;
 }
+
+#area-view {
+
+  ul {
+    width: 800px;
+    list-style-type: none;
+  }
+
+  li {
+    position: relative;
+    display: inline-block;
+    margin: 0 2px;
+    border: 1px solid black;
+
+    span {
+      position: absolute;
+      bottom: 20px;
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+    }
+  }
+
+  @for $i from 1 through 4 {
+    li:nth-child(#{$i}) {
+      animation-delay: 0.2s * $i;
+    }
+  }
+
+  img {
+    display: block;
+  }
+
+}

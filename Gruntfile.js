@@ -85,6 +85,15 @@ module.exports = function(grunt) {
           dest: 'data/images/'
         }]
       }
+    },
+
+    express: {
+      server: {
+        options: {
+          debug: true,
+          server: path.resolve('./server/app.js')
+        }
+      }
     }
 
   });
@@ -97,6 +106,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-react');
   grunt.loadNpmTasks('grunt-responsive-images');
+  grunt.loadNpmTasks('grunt-express');
 
   grunt.registerTask('default', [
     'clean',
@@ -108,6 +118,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('img', [
     'responsive_images'
+  ]);
+
+  grunt.registerTask('server', [
+    'express',
+    'express-keepalive'
   ]);
 
 };

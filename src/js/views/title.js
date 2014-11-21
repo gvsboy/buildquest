@@ -22,8 +22,16 @@ TitleView = React.createClass({
     });
   },
 
-  componentWillUnmount: function() {
-    console.log('unmounting! ------');
+  transitionOut: function(className, callback) {
+    var node = this.getDOMNode();
+    var animationEndTypes = ['webkitAnimationEnd', 'mozAnimationEnd', 'MSAnimationEnd', 'animationend'];
+    _.each(animationEndTypes, function(type) {
+      function transition() {
+        node.removeEventListener(type, transition);
+        callback();
+      }
+      node.addEventListener(type, transition);
+    }, this);
   },
 
   render: function() {

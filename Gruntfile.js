@@ -13,7 +13,7 @@ module.exports = function(grunt) {
           style: 'expanded'
         },
         files: {
-          'dist/css/main.css': 'src/scss/main.scss'
+          'tmp/main.css': 'src/scss/main.scss'
         }
       }
     },
@@ -22,12 +22,16 @@ module.exports = function(grunt) {
       html: {
         src: 'src/html/**/*.html',
         dest: 'dist/index.html'
+      },
+      css: {
+        src: ['tmp/lib.css', 'tmp/main.css'],
+        dest: 'dist/main.css'
       }
     },
 
     bower_concat: {
       css: {
-        dest: 'dist/css/lib.css',
+        dest: 'tmp/lib.css',
         mainFiles: {
           'animate.css': 'animate.min.css',
           'pure': 'pure-min.css'
@@ -40,7 +44,8 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      dist: 'dist'
+      dist: 'dist',
+      tmp: 'tmp'
     },
 
     watch: { 
@@ -59,7 +64,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/js/main.js': 'src/js/app.js'
+          'dist/main.js': 'src/js/app.js'
         }
       }
     },
@@ -109,11 +114,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-express');
 
   grunt.registerTask('default', [
-    'clean',
+    'clean:dist',
     'sass',
-    'concat',
     'bower_concat:css',
-    'browserify:dist'
+    'concat',
+    'browserify:dist',
+    'clean:tmp'
   ]);
 
   grunt.registerTask('img', [

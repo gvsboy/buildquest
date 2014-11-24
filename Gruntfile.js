@@ -8,24 +8,33 @@ module.exports = function(grunt) {
     pkg: pkg,
 
     sass: {
+      options: {
+        style: 'expanded'
+      },
       dist: {
-        options: {
-          style: 'expanded'
-        },
         files: {
           'tmp/main.css': 'src/scss/main.scss'
+        }
+      },
+      public: {
+        files: {
+          'tmp/main.css': 'server/src/scss/main.scss'
         }
       }
     },
 
     concat: {
-      html: {
-        src: 'src/html/**/*.html',
-        dest: 'dist/index.html'
+      dist: {
+        files: {
+          'dist/index.html': 'src/html/**/*.html',
+          'dist/main.css': ['tmp/lib.css', 'tmp/main.css']
+        }
       },
-      css: {
-        src: ['tmp/lib.css', 'tmp/main.css'],
-        dest: 'dist/main.css'
+      public: {
+        files: {
+          'server/public/index.html': 'server/src/html/index.html',
+          'server/public/main.css': ['tmp/lib.css', 'tmp/main.css']
+        }
       }
     },
 
@@ -45,7 +54,8 @@ module.exports = function(grunt) {
 
     clean: {
       dist: 'dist',
-      tmp: 'tmp'
+      tmp: 'tmp',
+      public: 'server/public'
     },
 
     watch: { 
@@ -65,6 +75,11 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/main.js': 'src/js/app.js'
+        }
+      },
+      public: {
+        files: {
+          'server/public/main.js': 'server/src/js/app.js'
         }
       }
     },
@@ -113,19 +128,35 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-responsive-images');
   grunt.loadNpmTasks('grunt-express');
 
-  grunt.registerTask('default', [
+  // Detault task.
+  grunt.registerTask('default', 'build:dist');
+
+  // Task to generate the game.
+  grunt.registerTask('build:dist', [
     'clean:dist',
-    'sass',
+    'sass:dist',
     'bower_concat:css',
-    'concat',
+    'concat:dist',
     'browserify:dist',
     'clean:tmp'
   ]);
 
+  // Task to generate assets for the server app.
+  grunt.registerTask('build:public', [
+    'clean:public',
+    'sass:public',
+    'bower_concat:css',
+    'concat:public',
+    'browserify:public',
+    'clean:tmp'
+  ]);
+
+  // Task to generate all the responsive images.
   grunt.registerTask('img', [
     'responsive_images'
   ]);
 
+  // Task to start and persist the build server.
   grunt.registerTask('server', [
     'express',
     'express-keepalive'

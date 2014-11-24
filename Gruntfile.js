@@ -59,13 +59,20 @@ module.exports = function(grunt) {
     },
 
     watch: { 
-      scripts: {
+      dist: {
         files: ['src/**/*'],
-        tasks: ['default'],
+        tasks: ['build:dist'],
         options: {
           livereload: true
         }
-      }
+      },
+      public: {
+        files: ['server/src/**/*'],
+        tasks: ['build:public'],
+        options: {
+          livereload: true
+        }
+      },
     },
 
     browserify: {

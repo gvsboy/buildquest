@@ -5,9 +5,10 @@
   "author": "Kevin Mikles",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/gvsboy/buildquest"
   },
   "devDependencies": {
+    "body-parser": "^1.9.3",
     "express": "^4.10.2",
     "fiber": "^1.0.4",
     "grunt": "^0.4.5",
@@ -20,6 +21,7 @@
     "grunt-express": "^1.4.1",
     "grunt-react": "^0.10.0",
     "grunt-responsive-images": "^0.1.4",
+    "mongodb": "^1.4.22",
     "mongoose": "^3.8.19",
     "react": "^0.12.0"
   }

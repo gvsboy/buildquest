@@ -6,7 +6,7 @@ var QuestList = React.createClass({
   displayName: 'QuestList',
 
   handleClick: function() {
-    this.props.setModule('NewQuest');
+    this.props.setModule('Quest');
   },
 
   render: function() {

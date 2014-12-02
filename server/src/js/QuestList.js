@@ -1,21 +1,19 @@
 /** @jsx React.DOM */
-var React = require('react');
+var React = require('react'),
+    Router = require('react-router'),
+    Link = Router.Link;
 
 var QuestList = React.createClass({
 
   displayName: 'QuestList',
 
-  handleClick: function() {
-    this.props.setModule('Quest');
-  },
-
   render: function() {
     return (
 
       <div id="module-questList">
-        <button className="pure-button pure-button-primary" onClick={this.handleClick}>
+        <Link to="quest" className="pure-button pure-button-primary">
           + Create a New Quest
-        </button>
+        </Link>
       </div>
 
     );

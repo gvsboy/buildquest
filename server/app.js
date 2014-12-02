@@ -27,8 +27,9 @@ app.use(bodyParser.json());
 
 // Various routes.
 app.post('/quest', function(req, res) {
-  console.log(req.body);
-  res.send('yeah!');
+  db.collection('quests').insert(req.body, function(err, doc) {
+    res.send(err || doc);
+  });
 });
 
 module.exports = app;

@@ -29915,13 +29915,128 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":75}],195:[function(require,module,exports){
+var React = require('react'),
+    Router = require('react-router'),
+    Route = Router.Route,
+    DefaultRoute = Router.DefaultRoute,
+    RouteHandler = Router.RouteHandler,
+    Link = Router.Link,
+
+    QuestNew = require('./quests/new'),
+    QuestIndex = require('./quests/index');
+
+var App = React.createClass({displayName: 'App',
+
+  render: function() {
+    return (
+      React.createElement("div", {id: "application"}, 
+        React.createElement("header", null, 
+          React.createElement("h1", {className: "animated bounceInDown"}, 
+            React.createElement(Link, {to: "/"}, 
+              React.createElement("i", {className: "fa fa-cubes"}), " QuestBuilder"
+            )
+          )
+        ), 
+        React.createElement(RouteHandler, null)
+      )
+    );
+  }
+
+});
+
+var routes = (
+  React.createElement(Route, {name: "app", path: "/", handler: App}, 
+    React.createElement(Route, {name: "quest", handler: QuestNew}), 
+    React.createElement(DefaultRoute, {handler: QuestIndex})
+  )
+);
+
+Router.run(routes, Router.HistoryLocation, function(Handler) {
+  React.render(React.createElement(Handler, null), document.body);
+});
+
+},{"./quests/index":196,"./quests/new":198,"react":194,"react-router":16}],196:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    Router = require('react-router'),
+    Error = require('../util/Error'),
+    QuestList = require('./list'),
+    Link = Router.Link;
+
+var QuestIndex = React.createClass({
+
+  displayName: 'QuestIndex',
+
+  getInitialState: function() {
+    return {
+      data: [],
+      error: false
+    };
+  },
+
+  componentDidMount: function() {
+    var self = this,
+        request = new XMLHttpRequest();
+    request.open('GET', '/quests', true);
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        self.setState({
+          data: JSON.parse(request.responseText)
+        });
+      } else {
+        self.setState({
+          error: true
+        });
+      }
+    };
+
+    request.send();
+  },
+
+  render: function() {
+    return (
+
+      React.createElement("div", {id: "module-questIndex"}, 
+        React.createElement(Link, {to: "quest", className: "pure-button pure-button-primary"}, 
+          React.createElement("i", {className: "fa fa-plus-square"}), " Create a New Quest"
+        ), 
+        this.state.error ? React.createElement(Error, {type: "questIndex"}) : React.createElement(QuestList, {data: this.state.data})
+      )
+
+    );
+  }
+
+});
+
+module.exports = QuestIndex;
+
+},{"../util/Error":199,"./list":197,"react":194,"react-router":16}],197:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+
+var QuestList = React.createClass({
+
+  displayName: 'QuestList',
+
+  render: function() {
+    return (
+
+      React.createElement("div", null, "QuestList")
+
+    );
+  }
+});
+
+module.exports = QuestList;
+
+},{"react":194}],198:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     _ = require('lodash');
 
 var Quest = React.createClass({
 
-  displayName: 'Quest',
+  displayName: 'QuestNew',
 
   handleSubmit: function(evt) {
 
@@ -29933,10 +30048,10 @@ var Quest = React.createClass({
         }, {});
 
     evt.preventDefault();
-    this.send(target.action, data);
+    this.post(target.action, data);
   },
 
-  send: function(url, data, success, error) {
+  post: function(url, data, success, error) {
 
     var request = new XMLHttpRequest();
     request.open('POST', url, true);
@@ -29960,7 +30075,7 @@ var Quest = React.createClass({
     return (
 
       React.createElement("div", {id: "module-quest"}, 
-        React.createElement("form", {className: "pure-form pure-form-aligned", action: "/quest", onSubmit: this.handleSubmit}, 
+        React.createElement("form", {className: "pure-form pure-form-aligned", action: "/quests", onSubmit: this.handleSubmit}, 
           React.createElement("fieldset", null, 
             React.createElement("legend", null, "Create a New Quest"), 
 
@@ -29989,71 +30104,33 @@ var Quest = React.createClass({
 
 module.exports = Quest;
 
-},{"lodash":6,"react":194}],196:[function(require,module,exports){
+},{"lodash":6,"react":194}],199:[function(require,module,exports){
 /** @jsx React.DOM */
-var React = require('react'),
-    Router = require('react-router'),
-    Link = Router.Link;
+var React = require('react');
 
-var QuestList = React.createClass({
+var Error = React.createClass({
 
-  displayName: 'QuestList',
+  displayName: 'Error',
+
+  messages: {
+    questIndex: 'Could not fetch quest list from the server!'
+  },
+
+  getMessage: function() {
+    return this.messages[this.props.type];
+  },
 
   render: function() {
     return (
 
-      React.createElement("div", {id: "module-questList"}, 
-        React.createElement(Link, {to: "quest", className: "pure-button pure-button-primary"}, 
-          "+ Create a New Quest"
-        )
+      React.createElement("p", {className: "error animated shake"}, 
+        React.createElement("i", {className: "fa fa-warning"}), " ", this.getMessage()
       )
 
     );
   }
-
 });
 
-module.exports = QuestList;
+module.exports = Error;
 
-},{"react":194,"react-router":16}],197:[function(require,module,exports){
-var React = require('react'),
-    Router = require('react-router'),
-    Route = Router.Route,
-    DefaultRoute = Router.DefaultRoute,
-    RouteHandler = Router.RouteHandler,
-    Link = Router.Link,
-
-    Quest = require('./Quest'),
-    QuestList = require('./QuestList');
-
-var App = React.createClass({displayName: 'App',
-
-  render: function() {
-    return (
-      React.createElement("div", {id: "application"}, 
-        React.createElement("header", null, 
-          React.createElement("h1", {className: "animated bounceInDown"}, 
-            React.createElement(Link, {to: "/"}, 
-              "QuestBuilder"
-            )
-          )
-        ), 
-        React.createElement(RouteHandler, null)
-      )
-    );
-  }
-
-});
-
-var routes = (
-  React.createElement(Route, {name: "app", path: "/", handler: App}, 
-    React.createElement(Route, {name: "quest", handler: Quest}), 
-    React.createElement(DefaultRoute, {handler: QuestList})
-  )
-);
-
-Router.run(routes, Router.HistoryLocation, function(Handler) {
-  React.render(React.createElement(Handler, null), document.body);
-});
-
-},{"./Quest":195,"./QuestList":196,"react":194,"react-router":16}]},{},[197]);
+},{"react":194}]},{},[195]);

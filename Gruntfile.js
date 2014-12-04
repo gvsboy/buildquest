@@ -27,13 +27,13 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/index.html': 'src/html/**/*.html',
-          'dist/main.css': ['tmp/lib.css', 'tmp/main.css']
+          'dist/css/main.css': ['tmp/lib.css', 'tmp/main.css']
         }
       },
       public: {
         files: {
           'server/public/index.html': 'server/src/html/index.html',
-          'server/public/main.css': ['tmp/lib.css', 'tmp/main.css']
+          'server/public/css/main.css': ['tmp/lib.css', 'tmp/main.css']
         }
       }
     },
@@ -43,12 +43,29 @@ module.exports = function(grunt) {
         dest: 'tmp/lib.css',
         mainFiles: {
           'animate.css': 'animate.min.css',
-          'pure': 'pure-min.css'
+          'pure': 'pure-min.css',
+          'fontawesome': 'css/font-awesome.min.css'
         },
         include: [
           'animate.css',
-          'pure'
+          'pure',
+          'fontawesome'
         ]
+      }
+    },
+
+    copy: {
+      dist: {
+        cwd: 'bower_components/fontawesome/fonts/',
+        src: ['**'],
+        dest: 'dist/fonts/',
+        expand: true
+      },
+      public: {
+        cwd: 'bower_components/fontawesome/fonts/',
+        src: ['**'],
+        dest: 'server/public/fonts/',
+        expand: true
       }
     },
 
@@ -81,12 +98,12 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/main.js': 'src/js/app.js'
+          'dist/js/main.js': 'src/js/app.js'
         }
       },
       public: {
         files: {
-          'server/public/main.js': 'server/src/js/app.js'
+          'server/public/js/main.js': 'server/src/js/app.js'
         }
       }
     },
@@ -129,6 +146,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-bower-concat');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-react');
@@ -145,6 +163,7 @@ module.exports = function(grunt) {
     'bower_concat:css',
     'concat:dist',
     'browserify:dist',
+    'copy:dist',
     'clean:tmp'
   ]);
 
@@ -155,6 +174,7 @@ module.exports = function(grunt) {
     'bower_concat:css',
     'concat:public',
     'browserify:public',
+    'copy:public',
     'clean:tmp'
   ]);
 

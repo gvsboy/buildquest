@@ -26,10 +26,18 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(bodyParser.json());
 
 // Various routes.
-app.post('/quest', function(req, res) {
-  db.collection('quests').insert(req.body, function(err, doc) {
-    res.send(err || doc);
+app
+
+  .post('/quests', function(req, res) {
+    db.collection('quests').insert(req.body, function(err, doc) {
+      res.send(err || doc);
+    });
+  })
+
+  .get('/quests', function(req, res) {
+    db.collection('quests').find().toArray(function(err, docs) {
+      res.send(err || docs);
+    });
   });
-});
 
 module.exports = app;

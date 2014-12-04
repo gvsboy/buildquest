@@ -4,7 +4,7 @@ var React = require('react'),
 
 var Quest = React.createClass({
 
-  displayName: 'Quest',
+  displayName: 'QuestNew',
 
   handleSubmit: function(evt) {
 
@@ -16,10 +16,10 @@ var Quest = React.createClass({
         }, {});
 
     evt.preventDefault();
-    this.send(target.action, data);
+    this.post(target.action, data);
   },
 
-  send: function(url, data, success, error) {
+  post: function(url, data, success, error) {
 
     var request = new XMLHttpRequest();
     request.open('POST', url, true);
@@ -43,7 +43,7 @@ var Quest = React.createClass({
     return (
 
       <div id="module-quest">
-        <form className="pure-form pure-form-aligned" action="/quest" onSubmit={this.handleSubmit}>
+        <form className="pure-form pure-form-aligned" action="/quests" onSubmit={this.handleSubmit}>
           <fieldset>
             <legend>Create a New Quest</legend>
 

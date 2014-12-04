@@ -5,8 +5,8 @@ var React = require('react'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link,
 
-    Quest = require('./Quest'),
-    QuestList = require('./QuestList');
+    QuestNew = require('./quests/new'),
+    QuestIndex = require('./quests/index');
 
 var App = React.createClass({
 
@@ -16,7 +16,7 @@ var App = React.createClass({
         <header>
           <h1 className="animated bounceInDown">
             <Link to="/">
-              QuestBuilder
+              <i className="fa fa-cubes"></i> QuestBuilder
             </Link>
           </h1>
         </header>
@@ -29,8 +29,8 @@ var App = React.createClass({
 
 var routes = (
   <Route name="app" path="/" handler={App}>
-    <Route name="quest" handler={Quest}/>
-    <DefaultRoute handler={QuestList}/>
+    <Route name="quest" handler={QuestNew}/>
+    <DefaultRoute handler={QuestIndex}/>
   </Route>
 );
 

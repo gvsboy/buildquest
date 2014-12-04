@@ -42,7 +42,7 @@ TitleView = React.createClass({
         <form id='form-name' className='pure-form animated fadeIn' onSubmit={this.handleSubmit}>
           <label htmlFor='input-name'>What&apos;s your name?</label>
           <input id='input-name' type='text' maxLength='50' onChange={this.validate}/>
-          <button disabled={this.state.disabled} className='pure-button'>Let&apos;s Go!</button>
+          <button disabled={this.state.disabled} className='pure-button fa fa-arrow-circle-right'>Let&apos;s Go!</button>
         </form>
       </div>
 

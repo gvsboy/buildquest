@@ -38,6 +38,11 @@ app
     db.collection('quests').find().toArray(function(err, docs) {
       res.send(err || docs);
     });
+  })
+
+  // Catch-all redirect to index
+  .get('*', function(req, res) {
+    res.redirect('/');
   });
 
 module.exports = app;

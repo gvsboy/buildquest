@@ -18,6 +18,26 @@ h1 {
   }
 }
 
+h3 {
+  margin-bottom: 0.2em;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+#objects-menu {
+  float: left;
+  width: 10em;
+  margin-right: 4em;
+}
+
 .error {
   color: #ff0000;
   font-weight: bold;

@@ -6,7 +6,8 @@ var React = require('react'),
     Link = Router.Link,
 
     QuestNew = require('./quests/new'),
-    QuestIndex = require('./quests/index');
+    QuestIndex = require('./quests/index'),
+    ObjectsIndex = require('./objects/index');
 
 var App = React.createClass({
 
@@ -30,6 +31,9 @@ var App = React.createClass({
 var routes = (
   <Route name="app" path="/" handler={App}>
     <Route name="quest" handler={QuestNew}/>
+    <Route name="objects" handler={ObjectsIndex}>
+      <DefaultRoute handler={QuestNew}/>
+    </Route>
     <DefaultRoute handler={QuestIndex}/>
   </Route>
 );

@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
-var React = require('react');
+var React = require('react'),
+    QuestItem = require('./item');
 
 var QuestList = React.createClass({
 
@@ -8,7 +9,11 @@ var QuestList = React.createClass({
   render: function() {
     return (
 
-      <div>QuestList</div>
+      <ul>
+        {this.props.data.map(function(quest) {
+          return <QuestItem key={quest._id} data={quest}/>;
+        })}
+      </ul>
 
     );
   }

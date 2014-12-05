@@ -29923,7 +29923,8 @@ var React = require('react'),
     Link = Router.Link,
 
     QuestNew = require('./quests/new'),
-    QuestIndex = require('./quests/index');
+    QuestIndex = require('./quests/index'),
+    ObjectsIndex = require('./objects/index');
 
 var App = React.createClass({displayName: 'App',
 
@@ -29947,6 +29948,9 @@ var App = React.createClass({displayName: 'App',
 var routes = (
   React.createElement(Route, {name: "app", path: "/", handler: App}, 
     React.createElement(Route, {name: "quest", handler: QuestNew}), 
+    React.createElement(Route, {name: "objects", handler: ObjectsIndex}, 
+      React.createElement(DefaultRoute, {handler: QuestNew})
+    ), 
     React.createElement(DefaultRoute, {handler: QuestIndex})
   )
 );
@@ -29955,7 +29959,64 @@ Router.run(routes, Router.HistoryLocation, function(Handler) {
   React.render(React.createElement(Handler, null), document.body);
 });
 
-},{"./quests/index":196,"./quests/new":198,"react":194,"react-router":16}],196:[function(require,module,exports){
+},{"./objects/index":196,"./quests/index":198,"./quests/new":201,"react":194,"react-router":16}],196:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    Menu = require('./menu'),
+    Router = require('react-router'),
+    RouteHandler = Router.RouteHandler;
+
+var ObjectsIndex = React.createClass({
+
+  displayName: 'ObjectsIndex',
+
+  render: function() {
+    return (
+
+      React.createElement("div", null, 
+        React.createElement("h2", null, "ObjectsIndex"), 
+        React.createElement(Menu, null), 
+        React.createElement(RouteHandler, null)
+      )
+
+    );
+  }
+
+});
+
+module.exports = ObjectsIndex;
+
+},{"./menu":197,"react":194,"react-router":16}],197:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    Router = require('react-router'),
+    Link = Router.Link;
+
+var ObjectsMenu = React.createClass({
+
+  displayName: 'ObjectsMenu',
+
+  render: function() {
+    return (
+
+      React.createElement("div", {id: "objects-menu", className: "pure-menu pure-menu-open"}, 
+        React.createElement("span", {className: "pure-menu-heading"}, "Quest Objects"), 
+        React.createElement("ul", null, 
+          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Areas")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Items")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Monsters")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Conditions")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Stories"))
+        )
+      )
+
+    );
+  }
+});
+
+module.exports = ObjectsMenu;
+
+},{"react":194,"react-router":16}],198:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30010,9 +30071,39 @@ var QuestIndex = React.createClass({
 
 module.exports = QuestIndex;
 
-},{"../util/Error":199,"./list":197,"react":194,"react-router":16}],197:[function(require,module,exports){
+},{"../util/Error":202,"./list":200,"react":194,"react-router":16}],199:[function(require,module,exports){
 /** @jsx React.DOM */
-var React = require('react');
+var React = require('react'),
+    Router = require('react-router'),
+    Link = Router.Link;
+
+var QuestItem = React.createClass({
+
+  displayName: 'QuestItem',
+
+  render: function() {
+
+    var data = this.props.data;
+
+    return (
+
+      React.createElement("li", null, 
+        React.createElement(Link, {to: "objects"}, 
+          React.createElement("h3", null, data.name), 
+          React.createElement("p", null, data.goal)
+        )
+      )
+
+    );
+  }
+});
+
+module.exports = QuestItem;
+
+},{"react":194,"react-router":16}],200:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    QuestItem = require('./item');
 
 var QuestList = React.createClass({
 
@@ -30021,7 +30112,11 @@ var QuestList = React.createClass({
   render: function() {
     return (
 
-      React.createElement("div", null, "QuestList")
+      React.createElement("ul", null, 
+        this.props.data.map(function(quest) {
+          return React.createElement(QuestItem, {key: quest._id, data: quest});
+        })
+      )
 
     );
   }
@@ -30029,7 +30124,7 @@ var QuestList = React.createClass({
 
 module.exports = QuestList;
 
-},{"react":194}],198:[function(require,module,exports){
+},{"./item":199,"react":194}],201:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     _ = require('lodash');
@@ -30104,7 +30199,7 @@ var Quest = React.createClass({
 
 module.exports = Quest;
 
-},{"lodash":6,"react":194}],199:[function(require,module,exports){
+},{"lodash":6,"react":194}],202:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 

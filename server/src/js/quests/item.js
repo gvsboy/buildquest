@@ -14,7 +14,7 @@ var QuestItem = React.createClass({
     return (
 
       <li>
-        <Link to="objects">
+        <Link to="objects" params={{id: this.props.data._id}}>
           <h3>{data.name}</h3>
           <p>{data.goal}</p>
         </Link>

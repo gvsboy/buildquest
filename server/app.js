@@ -28,15 +28,15 @@ app.use(bodyParser.json());
 // Various routes.
 app
 
-  .post('/quests', function(req, res) {
-    db.collection('quests').insert(req.body, function(err, doc) {
-      res.send(err || doc);
-    });
-  })
-
   .get('/quests', function(req, res) {
     db.collection('quests').find().toArray(function(err, docs) {
       res.send(err || docs);
+    });
+  })
+
+  .post('/quests', function(req, res) {
+    db.collection('quests').save(req.body, function(err, doc) {
+      res.send(err || doc);
     });
   })
 

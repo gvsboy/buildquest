@@ -21,7 +21,7 @@ var App = React.createClass({
             </Link>
           </h1>
         </header>
-        <RouteHandler/>
+        <RouteHandler {...this.props}/>
       </div>
     );
   }
@@ -31,13 +31,13 @@ var App = React.createClass({
 var routes = (
   <Route name="app" path="/" handler={App}>
     <Route name="quest" handler={QuestNew}/>
-    <Route name="objects" handler={ObjectsIndex}>
+    <Route name="objects" path="/objects/:id" handler={ObjectsIndex}>
       <DefaultRoute handler={QuestNew}/>
     </Route>
     <DefaultRoute handler={QuestIndex}/>
   </Route>
 );
 
-Router.run(routes, Router.HistoryLocation, function(Handler) {
-  React.render(<Handler/>, document.body);
+Router.run(routes, Router.HistoryLocation, function(Handler, state) {
+  React.render(<Handler params={state.params}/>, document.body);
 });

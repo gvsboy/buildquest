@@ -1,8 +1,11 @@
 /** @jsx React.DOM */
 var React = require('react'),
+    Navigation = require('react-router').Navigation,
     _ = require('lodash');
 
 var Quest = React.createClass({
+
+  mixins: [Navigation],
 
   displayName: 'QuestNew',
 
@@ -22,14 +25,17 @@ var Quest = React.createClass({
   post: function(url, data, success, error) {
 
     var request = new XMLHttpRequest();
+    var self = this;
     request.open('POST', url, true);
     request.setRequestHeader('content-type', 'application/json');
 
     request.onload = function() {
+      console.log(request);
       if (request.status >= 200 && request.status < 400){
         // Success!
         //data = JSON.parse(request.responseText);
         console.log(request.responseText);
+        self.transitionTo('objects');
       } else {
         // We reached our target server, but it returned an error
         console.log('oh man server error!');

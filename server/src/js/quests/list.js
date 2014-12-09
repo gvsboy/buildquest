@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react'),
-    QuestItem = require('./item');
+    QuestItem = require('./item'),
+    _ = require('lodash');
 
 var QuestList = React.createClass({
 
@@ -10,7 +11,7 @@ var QuestList = React.createClass({
     return (
 
       <ul>
-        {this.props.data.map(function(quest) {
+        {_.map(this.props.data, function(quest) {
           return <QuestItem key={quest._id} data={quest}/>;
         })}
       </ul>

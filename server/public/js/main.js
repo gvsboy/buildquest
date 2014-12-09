@@ -29938,7 +29938,7 @@ var App = React.createClass({displayName: 'App',
             )
           )
         ), 
-        React.createElement(RouteHandler, null)
+        React.createElement(RouteHandler, React.__spread({},  this.props))
       )
     );
   }
@@ -29948,18 +29948,145 @@ var App = React.createClass({displayName: 'App',
 var routes = (
   React.createElement(Route, {name: "app", path: "/", handler: App}, 
     React.createElement(Route, {name: "quest", handler: QuestNew}), 
-    React.createElement(Route, {name: "objects", handler: ObjectsIndex}, 
+    React.createElement(Route, {name: "objects", path: "/objects/:id", handler: ObjectsIndex}, 
       React.createElement(DefaultRoute, {handler: QuestNew})
     ), 
     React.createElement(DefaultRoute, {handler: QuestIndex})
   )
 );
 
-Router.run(routes, Router.HistoryLocation, function(Handler) {
-  React.render(React.createElement(Handler, null), document.body);
+Router.run(routes, Router.HistoryLocation, function(Handler, state) {
+  React.render(React.createElement(Handler, {params: state.params}), document.body);
 });
 
-},{"./objects/index":196,"./quests/index":198,"./quests/new":201,"react":194,"react-router":16}],196:[function(require,module,exports){
+},{"./objects/index":197,"./quests/index":199,"./quests/new":202,"react":194,"react-router":16}],196:[function(require,module,exports){
+/**
+ * An interface for storing and retrieving data.
+ * @type {Object}
+ */
+
+// The namespace where the data object is located.
+var NAMESPACE = '__store',
+
+    // Context where the data is stored.
+    CONTEXT = window,
+
+    GET = 'get',
+    POST = 'post',
+
+    // Lo-Dash goodness.
+    _ = require('lodash');
+
+// Mixin
+var Store = {
+
+  getInitialState: function() {
+    return {
+      data: [],
+      error: false
+    };
+  },
+
+  /**
+   * Initialize the data store if
+   * @return {[type]} [description]
+   */
+  componentWillMount: function() {
+    if (!CONTEXT[NAMESPACE]) {
+      CONTEXT[NAMESPACE] = {};
+    }
+  },
+
+  /**
+   * Gets data by collection name and optional object id (if omitted,
+   * all collection data is returned). If the data is not available
+   * locally, an attempt will be made to fetch it from the server and
+   * cache it locally. The state is updated accordingly.
+   * @param  {String} name The collection name to get data from. 
+   * @param  {String} [id] A specific object to get by id.
+   */
+  getData: function(type, id) {
+
+    // Get the collection object.
+    var collection = CONTEXT[NAMESPACE][type];
+
+    // If the collection is already cached client side, try to find
+    // the requested object.
+    if (collection) {
+
+      // If an id was passed, attempt to locate the object by id.
+      if (id && collection[id]) {
+        this._setData(collection[id]);
+      }
+
+      // Otherwise, get all the objects.
+      else {
+        this._setData(collection);
+      }
+    }
+
+    // Otherwise, fetch it from the server.
+    else {
+      this._fetch(GET, type, id);
+    }
+  },
+
+  postData: function() {
+
+  },
+
+  _fetch: function(method, endpoint, id) {
+
+    var request = new XMLHttpRequest();
+
+    request.open(method, endpoint, true);
+
+    request.onload = _.bind(function() {
+      if (request.status >= 200 && request.status < 400) {
+        this._cache(endpoint, JSON.parse(request.responseText));
+      } else {
+        this._setError();
+      }
+    }, this);
+
+    request.send();
+  },
+
+  _cache: function(type, data) {
+
+    var root = CONTEXT[NAMESPACE],
+        collection = root[type] = root[type] || {};
+
+    if (_.isArray(data)) {
+      _.forEach(data, function(item) {
+        collection[item._id] = item;
+      });
+    }
+
+    else {
+      collection[data._id] = data;
+    }
+
+    this._setData(data);
+  },
+
+  _setData: function(data) {
+    this.setState({
+      data: data
+    });
+  },
+
+  _setError: function() {
+    this.setState({
+      error: true
+    });
+  }
+
+};
+
+module.exports = Store;
+
+},{"lodash":6}],197:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Menu = require('./menu'),
@@ -29971,12 +30098,13 @@ var ObjectsIndex = React.createClass({
   displayName: 'ObjectsIndex',
 
   render: function() {
+    console.log(this.props.params);
     return (
 
       React.createElement("div", null, 
         React.createElement("h2", null, "ObjectsIndex"), 
         React.createElement(Menu, null), 
-        React.createElement(RouteHandler, null)
+        React.createElement(RouteHandler, React.__spread({},  this.props))
       )
 
     );
@@ -29986,7 +30114,7 @@ var ObjectsIndex = React.createClass({
 
 module.exports = ObjectsIndex;
 
-},{"./menu":197,"react":194,"react-router":16}],197:[function(require,module,exports){
+},{"./menu":198,"react":194,"react-router":16}],198:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30002,11 +30130,11 @@ var ObjectsMenu = React.createClass({
       React.createElement("div", {id: "objects-menu", className: "pure-menu pure-menu-open"}, 
         React.createElement("span", {className: "pure-menu-heading"}, "Quest Objects"), 
         React.createElement("ul", null, 
-          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Areas")), 
-          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Items")), 
-          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Monsters")), 
-          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Conditions")), 
-          React.createElement("li", null, React.createElement(Link, {to: "objects"}, "Stories"))
+          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Areas")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Items")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Monsters")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Conditions")), 
+          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Stories"))
         )
       )
 
@@ -30016,42 +30144,23 @@ var ObjectsMenu = React.createClass({
 
 module.exports = ObjectsMenu;
 
-},{"react":194,"react-router":16}],198:[function(require,module,exports){
+},{"react":194,"react-router":16}],199:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
     Error = require('../util/Error'),
     QuestList = require('./list'),
+    Store = require('../mixins/store'),
     Link = Router.Link;
 
 var QuestIndex = React.createClass({
 
   displayName: 'QuestIndex',
 
-  getInitialState: function() {
-    return {
-      data: [],
-      error: false
-    };
-  },
+  mixins: [Store],
 
   componentDidMount: function() {
-    var self = this,
-        request = new XMLHttpRequest();
-    request.open('GET', '/quests', true);
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        self.setState({
-          data: JSON.parse(request.responseText)
-        });
-      } else {
-        self.setState({
-          error: true
-        });
-      }
-    };
-
-    request.send();
+    this.getData('quests');
   },
 
   render: function() {
@@ -30071,7 +30180,7 @@ var QuestIndex = React.createClass({
 
 module.exports = QuestIndex;
 
-},{"../util/Error":202,"./list":200,"react":194,"react-router":16}],199:[function(require,module,exports){
+},{"../mixins/store":196,"../util/Error":203,"./list":201,"react":194,"react-router":16}],200:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30088,7 +30197,7 @@ var QuestItem = React.createClass({
     return (
 
       React.createElement("li", null, 
-        React.createElement(Link, {to: "objects"}, 
+        React.createElement(Link, {to: "objects", params: {id: this.props.data._id}}, 
           React.createElement("h3", null, data.name), 
           React.createElement("p", null, data.goal)
         )
@@ -30100,10 +30209,11 @@ var QuestItem = React.createClass({
 
 module.exports = QuestItem;
 
-},{"react":194,"react-router":16}],200:[function(require,module,exports){
+},{"react":194,"react-router":16}],201:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
-    QuestItem = require('./item');
+    QuestItem = require('./item'),
+    _ = require('lodash');
 
 var QuestList = React.createClass({
 
@@ -30113,7 +30223,7 @@ var QuestList = React.createClass({
     return (
 
       React.createElement("ul", null, 
-        this.props.data.map(function(quest) {
+        _.map(this.props.data, function(quest) {
           return React.createElement(QuestItem, {key: quest._id, data: quest});
         })
       )
@@ -30124,12 +30234,15 @@ var QuestList = React.createClass({
 
 module.exports = QuestList;
 
-},{"./item":199,"react":194}],201:[function(require,module,exports){
+},{"./item":200,"lodash":6,"react":194}],202:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
+    Navigation = require('react-router').Navigation,
     _ = require('lodash');
 
 var Quest = React.createClass({
+
+  mixins: [Navigation],
 
   displayName: 'QuestNew',
 
@@ -30149,14 +30262,17 @@ var Quest = React.createClass({
   post: function(url, data, success, error) {
 
     var request = new XMLHttpRequest();
+    var self = this;
     request.open('POST', url, true);
     request.setRequestHeader('content-type', 'application/json');
 
     request.onload = function() {
+      console.log(request);
       if (request.status >= 200 && request.status < 400){
         // Success!
         //data = JSON.parse(request.responseText);
         console.log(request.responseText);
+        self.transitionTo('objects');
       } else {
         // We reached our target server, but it returned an error
         console.log('oh man server error!');
@@ -30199,7 +30315,7 @@ var Quest = React.createClass({
 
 module.exports = Quest;
 
-},{"lodash":6,"react":194}],202:[function(require,module,exports){
+},{"lodash":6,"react":194,"react-router":16}],203:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 

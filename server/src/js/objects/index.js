@@ -9,12 +9,13 @@ var ObjectsIndex = React.createClass({
   displayName: 'ObjectsIndex',
 
   render: function() {
+    console.log(this.props.params);
     return (
 
       <div>
         <h2>ObjectsIndex</h2>
         <Menu/>
-        <RouteHandler/>
+        <RouteHandler {...this.props}/>
       </div>
 
     );

@@ -3,36 +3,17 @@ var React = require('react'),
     Router = require('react-router'),
     Error = require('../util/Error'),
     QuestList = require('./list'),
+    Store = require('../mixins/store'),
     Link = Router.Link;
 
 var QuestIndex = React.createClass({
 
   displayName: 'QuestIndex',
 
-  getInitialState: function() {
-    return {
-      data: [],
-      error: false
-    };
-  },
+  mixins: [Store],
 
   componentDidMount: function() {
-    var self = this,
-        request = new XMLHttpRequest();
-    request.open('GET', '/quests', true);
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        self.setState({
-          data: JSON.parse(request.responseText)
-        });
-      } else {
-        self.setState({
-          error: true
-        });
-      }
-    };
-
-    request.send();
+    this.getData('quests');
   },
 
   render: function() {

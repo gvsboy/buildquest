@@ -65,29 +65,53 @@ var Store = {
 
     // Otherwise, fetch it from the server.
     else {
-      this._fetch(GET, type, id);
+      this._get(type, id);
     }
   },
 
-  postData: function() {
-
+  postData: function(type, data, callback) {
+    this._post(type, data, callback);
   },
 
-  _fetch: function(method, endpoint, id) {
+  _get: function(endpoint, id) {
 
     var request = new XMLHttpRequest();
-
-    request.open(method, endpoint, true);
+    request.open(GET, endpoint, true);
 
     request.onload = _.bind(function() {
+      var data;
       if (request.status >= 200 && request.status < 400) {
-        this._cache(endpoint, JSON.parse(request.responseText));
+        data = JSON.parse(request.responseText);
+        this._cache(endpoint, data);
+        this._setData(data);
       } else {
         this._setError();
       }
     }, this);
 
     request.send();
+  },
+
+  _post: function(endpoint, data, callback) {
+
+    var request = new XMLHttpRequest();
+    request.open(POST, endpoint, true);
+    request.setRequestHeader('content-type', 'application/json');
+
+    request.onload = _.bind(function() {
+      var data;
+      if (request.status >= 200 && request.status < 400){
+        data = JSON.parse(request.responseText);
+        this._cache(endpoint, data);
+        if (_.isFunction(callback)) {
+          callback(data);
+        }
+      } else {
+        this._setError();
+      }
+    }, this);
+
+    request.send(JSON.stringify(data));
   },
 
   _cache: function(type, data) {
@@ -104,8 +128,6 @@ var Store = {
     else {
       collection[data._id] = data;
     }
-
-    this._setData(data);
   },
 
   _setData: function(data) {

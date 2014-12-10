@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
-    Error = require('../util/Error'),
+    Error = require('../util/error'),
     QuestList = require('./list'),
     Store = require('../mixins/store'),
     Link = Router.Link;

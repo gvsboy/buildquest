@@ -9,7 +9,6 @@ var ObjectsIndex = React.createClass({
   displayName: 'ObjectsIndex',
 
   render: function() {
-    console.log(this.props.params);
     return (
 
       <div>

@@ -29922,7 +29922,7 @@ var React = require('react'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link,
 
-    QuestNew = require('./quests/new'),
+    QuestEdit = require('./quests/edit'),
     QuestIndex = require('./quests/index'),
     ObjectsIndex = require('./objects/index');
 
@@ -29947,9 +29947,9 @@ var App = React.createClass({displayName: 'App',
 
 var routes = (
   React.createElement(Route, {name: "app", path: "/", handler: App}, 
-    React.createElement(Route, {name: "quest", handler: QuestNew}), 
+    React.createElement(Route, {name: "quest", handler: QuestEdit}), 
     React.createElement(Route, {name: "objects", path: "/objects/:id", handler: ObjectsIndex}, 
-      React.createElement(DefaultRoute, {handler: QuestNew})
+      React.createElement(DefaultRoute, {handler: QuestEdit})
     ), 
     React.createElement(DefaultRoute, {handler: QuestIndex})
   )
@@ -29959,7 +29959,7 @@ Router.run(routes, Router.HistoryLocation, function(Handler, state) {
   React.render(React.createElement(Handler, {params: state.params}), document.body);
 });
 
-},{"./objects/index":197,"./quests/index":199,"./quests/new":202,"react":194,"react-router":16}],196:[function(require,module,exports){
+},{"./objects/index":197,"./quests/edit":199,"./quests/index":200,"react":194,"react-router":16}],196:[function(require,module,exports){
 /**
  * An interface for storing and retrieving data.
  * @type {Object}
@@ -30027,29 +30027,53 @@ var Store = {
 
     // Otherwise, fetch it from the server.
     else {
-      this._fetch(GET, type, id);
+      this._get(type, id);
     }
   },
 
-  postData: function() {
-
+  postData: function(type, data, callback) {
+    this._post(type, data, callback);
   },
 
-  _fetch: function(method, endpoint, id) {
+  _get: function(endpoint, id) {
 
     var request = new XMLHttpRequest();
-
-    request.open(method, endpoint, true);
+    request.open(GET, endpoint, true);
 
     request.onload = _.bind(function() {
+      var data;
       if (request.status >= 200 && request.status < 400) {
-        this._cache(endpoint, JSON.parse(request.responseText));
+        data = JSON.parse(request.responseText);
+        this._cache(endpoint, data);
+        this._setData(data);
       } else {
         this._setError();
       }
     }, this);
 
     request.send();
+  },
+
+  _post: function(endpoint, data, callback) {
+
+    var request = new XMLHttpRequest();
+    request.open(POST, endpoint, true);
+    request.setRequestHeader('content-type', 'application/json');
+
+    request.onload = _.bind(function() {
+      var data;
+      if (request.status >= 200 && request.status < 400){
+        data = JSON.parse(request.responseText);
+        this._cache(endpoint, data);
+        if (_.isFunction(callback)) {
+          callback(data);
+        }
+      } else {
+        this._setError();
+      }
+    }, this);
+
+    request.send(JSON.stringify(data));
   },
 
   _cache: function(type, data) {
@@ -30066,8 +30090,6 @@ var Store = {
     else {
       collection[data._id] = data;
     }
-
-    this._setData(data);
   },
 
   _setData: function(data) {
@@ -30098,7 +30120,6 @@ var ObjectsIndex = React.createClass({
   displayName: 'ObjectsIndex',
 
   render: function() {
-    console.log(this.props.params);
     return (
 
       React.createElement("div", null, 
@@ -30147,8 +30168,79 @@ module.exports = ObjectsMenu;
 },{"react":194,"react-router":16}],199:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
+    TextInput = require('../util/text-input'),
+    Navigation = require('react-router').Navigation,
+    Store = require('../mixins/store'),
+    _ = require('lodash');
+
+var Quest = React.createClass({
+
+  mixins: [Navigation, Store],
+
+  displayName: 'QuestEdit',
+
+  componentWillMount: function() {
+    var id = this.props.params.id;
+    if (id) {
+      this.getData('quests', id);
+    }
+  },
+
+  handleSubmit: function(evt) {
+
+    var target = evt.target,
+        inputs = target.getElementsByTagName('input'),
+        action = target.action.split('/').pop(),
+        data = _.reduce(inputs, function(result, input) {
+          result[input.name] = input.value;
+          return result;
+        }, {});
+
+    evt.preventDefault();
+
+    this.postData(action, data, _.bind(function(data) {
+      this.transitionTo('objects', {id: data._id});
+    }, this));
+  },
+
+  render: function() {
+
+    // DB record id.
+    var id = this.props.params.id,
+        data = this.state.data;
+
+    return (
+
+      React.createElement("div", {id: "module-quest"}, 
+        React.createElement("form", {className: "pure-form pure-form-aligned", action: "quests", onSubmit: this.handleSubmit}, 
+          React.createElement("fieldset", null, 
+
+            React.createElement("legend", null, "Create a New Quest"), 
+            React.createElement(TextInput, {dataType: "name", data: data.name, placeholder: "Awesome Quest 2"}), 
+            React.createElement(TextInput, {dataType: "goal", data: data.goal, placeholder: "Find all the gummy bears"}), 
+
+            React.createElement("div", {className: "pure-control-group"}, 
+              React.createElement("button", {type: "submit", className: "pure-button pure-button-primary"}, "Continue")
+            ), 
+
+            id ? React.createElement("input", {id: "_id", name: "_id", type: "hidden", value: id}) : ''
+
+          )
+        )
+      )
+
+    );
+  }
+
+});
+
+module.exports = Quest;
+
+},{"../mixins/store":196,"../util/text-input":204,"lodash":6,"react":194,"react-router":16}],200:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
     Router = require('react-router'),
-    Error = require('../util/Error'),
+    Error = require('../util/error'),
     QuestList = require('./list'),
     Store = require('../mixins/store'),
     Link = Router.Link;
@@ -30180,7 +30272,7 @@ var QuestIndex = React.createClass({
 
 module.exports = QuestIndex;
 
-},{"../mixins/store":196,"../util/Error":203,"./list":201,"react":194,"react-router":16}],200:[function(require,module,exports){
+},{"../mixins/store":196,"../util/error":203,"./list":202,"react":194,"react-router":16}],201:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30209,7 +30301,7 @@ var QuestItem = React.createClass({
 
 module.exports = QuestItem;
 
-},{"react":194,"react-router":16}],201:[function(require,module,exports){
+},{"react":194,"react-router":16}],202:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     QuestItem = require('./item'),
@@ -30234,88 +30326,7 @@ var QuestList = React.createClass({
 
 module.exports = QuestList;
 
-},{"./item":200,"lodash":6,"react":194}],202:[function(require,module,exports){
-/** @jsx React.DOM */
-var React = require('react'),
-    Navigation = require('react-router').Navigation,
-    _ = require('lodash');
-
-var Quest = React.createClass({
-
-  mixins: [Navigation],
-
-  displayName: 'QuestNew',
-
-  handleSubmit: function(evt) {
-
-    var target = evt.target,
-        inputs = target.getElementsByTagName('input'),
-        data = _.reduce(inputs, function(result, input) {
-          result[input.name] = input.value;
-          return result;
-        }, {});
-
-    evt.preventDefault();
-    this.post(target.action, data);
-  },
-
-  post: function(url, data, success, error) {
-
-    var request = new XMLHttpRequest();
-    var self = this;
-    request.open('POST', url, true);
-    request.setRequestHeader('content-type', 'application/json');
-
-    request.onload = function() {
-      console.log(request);
-      if (request.status >= 200 && request.status < 400){
-        // Success!
-        //data = JSON.parse(request.responseText);
-        console.log(request.responseText);
-        self.transitionTo('objects');
-      } else {
-        // We reached our target server, but it returned an error
-        console.log('oh man server error!');
-      }
-    };
-
-    request.send(JSON.stringify(data));
-  },
-
-  render: function() {
-    return (
-
-      React.createElement("div", {id: "module-quest"}, 
-        React.createElement("form", {className: "pure-form pure-form-aligned", action: "/quests", onSubmit: this.handleSubmit}, 
-          React.createElement("fieldset", null, 
-            React.createElement("legend", null, "Create a New Quest"), 
-
-            React.createElement("div", {className: "pure-control-group"}, 
-              React.createElement("label", {htmlFor: "name"}, "Name"), 
-              React.createElement("input", {id: "name", name: "name", type: "text", placeholder: "Awesome Quest 2", required: true})
-            ), 
-
-            React.createElement("div", {className: "pure-control-group"}, 
-              React.createElement("label", {htmlFor: "goal"}, "Goal"), 
-              React.createElement("input", {id: "goal", name: "goal", type: "text", placeholder: "Find all the gummy bears", required: true})
-            ), 
-
-            React.createElement("div", {className: "pure-control-group"}, 
-              React.createElement("button", {type: "submit", className: "pure-button pure-button-primary"}, "Continue")
-            )
-
-          )
-        )
-      )
-
-    );
-  }
-
-});
-
-module.exports = Quest;
-
-},{"lodash":6,"react":194,"react-router":16}],203:[function(require,module,exports){
+},{"./item":201,"lodash":6,"react":194}],203:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 
@@ -30343,5 +30354,43 @@ var Error = React.createClass({
 });
 
 module.exports = Error;
+
+},{"react":194}],204:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+
+var TextInput = React.createClass({
+
+  displayName: 'TextInput',
+
+  capitalize: function(string) {
+    return string[0].toUpperCase() + string.slice(1);
+  },
+
+  render: function() {
+
+    var props = this.props,
+        dataType = props.dataType,
+        placeholder = props.placeholder,
+        data = props.data;
+
+    return (
+
+      React.createElement("div", {className: "pure-control-group"}, 
+        React.createElement("label", {htmlFor: dataType}, this.capitalize(dataType)), 
+        React.createElement("input", {
+          id: dataType, 
+          name: dataType, 
+          type: "text", 
+          placeholder: placeholder, 
+          defaultValue: data ? data : '', 
+        required: true})
+      )
+
+    );
+  }
+});
+
+module.exports = TextInput;
 
 },{"react":194}]},{},[195]);

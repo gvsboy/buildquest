@@ -81,6 +81,7 @@ var Store = {
     request.onload = _.bind(function() {
       var data;
       if (request.status >= 200 && request.status < 400) {
+        console.log('####', request.responseText);
         data = JSON.parse(request.responseText);
         this._cache(endpoint, data);
         this._setData(data);
@@ -99,12 +100,20 @@ var Store = {
     request.setRequestHeader('content-type', 'application/json');
 
     request.onload = _.bind(function() {
-      var data;
-      if (request.status >= 200 && request.status < 400){
-        data = JSON.parse(request.responseText);
-        this._cache(endpoint, data);
+      var responseData;
+      if (request.status >= 200 && request.status < 400) {
+        responseData = JSON.parse(request.responseText);
+
+        // If the response data is {status: 'updated'}, cache the
+        // submitted data. The server doesn't return documents for updates.
+        if (responseData.status === 'updated') {
+          responseData = data;
+        }
+
+        // Cache the data under the appropriate collection.
+        this._cache(endpoint, responseData);
         if (_.isFunction(callback)) {
-          callback(data);
+          callback(responseData);
         }
       } else {
         this._setError();

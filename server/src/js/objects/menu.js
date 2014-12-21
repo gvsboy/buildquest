@@ -13,7 +13,7 @@ var ObjectsMenu = React.createClass({
       <div id="objects-menu" className="pure-menu pure-menu-open">
         <span className="pure-menu-heading">Quest Objects</span>
         <ul>
-          <li><Link to="objects" params={{id:345}}>Areas</Link></li>
+          <li><Link to="areas" params={{id: this.props.objectId}}>Areas</Link></li>
           <li><Link to="objects" params={{id:345}}>Items</Link></li>
           <li><Link to="objects" params={{id:345}}>Monsters</Link></li>
           <li><Link to="objects" params={{id:345}}>Conditions</Link></li>

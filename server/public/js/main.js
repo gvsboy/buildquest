@@ -29924,7 +29924,9 @@ var React = require('react'),
 
     QuestEdit = require('./quests/edit'),
     QuestIndex = require('./quests/index'),
-    ObjectsIndex = require('./objects/index');
+    ObjectsIndex = require('./objects/index'),
+    AreaIndex = require('./areas/index'),
+    AreaEdit = require('./areas/edit');
 
 var App = React.createClass({displayName: 'App',
 
@@ -29949,17 +29951,95 @@ var routes = (
   React.createElement(Route, {name: "app", path: "/", handler: App}, 
     React.createElement(Route, {name: "quest", handler: QuestEdit}), 
     React.createElement(Route, {name: "objects", path: "/objects/:id", handler: ObjectsIndex}, 
+      React.createElement(Route, {name: "areas", path: "/objects/:id/areas", handler: AreaIndex}), 
+      React.createElement(Route, {name: "area", path: "/objects/:id/area", handler: AreaEdit}), 
       React.createElement(DefaultRoute, {handler: QuestEdit})
     ), 
     React.createElement(DefaultRoute, {handler: QuestIndex})
   )
 );
 
-Router.run(routes, Router.HistoryLocation, function(Handler, state) {
+Router.run(routes, function(Handler, state) {
   React.render(React.createElement(Handler, {params: state.params}), document.body);
 });
 
-},{"./objects/index":197,"./quests/edit":199,"./quests/index":200,"react":194,"react-router":16}],196:[function(require,module,exports){
+},{"./areas/edit":196,"./areas/index":197,"./objects/index":200,"./quests/edit":202,"./quests/index":203,"react":194,"react-router":16}],196:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+
+var AreaEdit = React.createClass({
+    displayName: 'AreaEdit',
+    render: function () {
+        return (
+            React.createElement("div", null, "AreaEdit")
+        );
+    }
+});
+
+module.exports = AreaEdit;
+
+},{"react":194}],197:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    Router = require('react-router'),
+    Error = require('../util/error'),
+    AreaList = require('./list'),
+    Store = require('../mixins/store'),
+    Link = Router.Link;
+
+var AreaIndex = React.createClass({
+
+  displayName: 'AreaIndex',
+
+  mixins: [Store],
+
+  componentDidMount: function() {
+    this.getData('areas');
+  },
+
+  render: function() {
+    return (
+
+      React.createElement("div", {id: "module-areaIndex"}, 
+        React.createElement(Link, {to: "area", params: {id: this.props.params.id}, className: "pure-button pure-button-primary"}, 
+          React.createElement("i", {className: "fa fa-plus-square"}), " Create a New Area"
+        ), 
+        this.state.error ? React.createElement(Error, {type: "areaIndex"}) : React.createElement(AreaList, {data: this.state.data})
+      )
+
+    );
+  }
+
+});
+
+module.exports = AreaIndex;
+
+},{"../mixins/store":199,"../util/error":206,"./list":198,"react":194,"react-router":16}],198:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react'),
+    //QuestItem = require('./item'),
+    _ = require('lodash');
+
+var AreaList = React.createClass({
+
+  displayName: 'AreaList',
+
+  render: function() {
+    return (
+
+      React.createElement("ul", null, 
+        _.map(this.props.data, function(quest) {
+          React.createElement("div", null, "WOO")
+        })
+      )
+
+    );
+  }
+});
+
+module.exports = AreaList;
+
+},{"lodash":6,"react":194}],199:[function(require,module,exports){
 /**
  * An interface for storing and retrieving data.
  * @type {Object}
@@ -30043,6 +30123,7 @@ var Store = {
     request.onload = _.bind(function() {
       var data;
       if (request.status >= 200 && request.status < 400) {
+        console.log('####', request.responseText);
         data = JSON.parse(request.responseText);
         this._cache(endpoint, data);
         this._setData(data);
@@ -30061,12 +30142,20 @@ var Store = {
     request.setRequestHeader('content-type', 'application/json');
 
     request.onload = _.bind(function() {
-      var data;
-      if (request.status >= 200 && request.status < 400){
-        data = JSON.parse(request.responseText);
-        this._cache(endpoint, data);
+      var responseData;
+      if (request.status >= 200 && request.status < 400) {
+        responseData = JSON.parse(request.responseText);
+
+        // If the response data is {status: 'updated'}, cache the
+        // submitted data. The server doesn't return documents for updates.
+        if (responseData.status === 'updated') {
+          responseData = data;
+        }
+
+        // Cache the data under the appropriate collection.
+        this._cache(endpoint, responseData);
         if (_.isFunction(callback)) {
-          callback(data);
+          callback(responseData);
         }
       } else {
         this._setError();
@@ -30108,7 +30197,7 @@ var Store = {
 
 module.exports = Store;
 
-},{"lodash":6}],197:[function(require,module,exports){
+},{"lodash":6}],200:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Menu = require('./menu'),
@@ -30123,8 +30212,8 @@ var ObjectsIndex = React.createClass({
     return (
 
       React.createElement("div", null, 
-        React.createElement("h2", null, "ObjectsIndex"), 
-        React.createElement(Menu, null), 
+        React.createElement("h2", null, "Quest Editor"), 
+        React.createElement(Menu, {objectId: this.props.params.id}), 
         React.createElement(RouteHandler, React.__spread({},  this.props))
       )
 
@@ -30135,7 +30224,7 @@ var ObjectsIndex = React.createClass({
 
 module.exports = ObjectsIndex;
 
-},{"./menu":198,"react":194,"react-router":16}],198:[function(require,module,exports){
+},{"./menu":201,"react":194,"react-router":16}],201:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30151,7 +30240,7 @@ var ObjectsMenu = React.createClass({
       React.createElement("div", {id: "objects-menu", className: "pure-menu pure-menu-open"}, 
         React.createElement("span", {className: "pure-menu-heading"}, "Quest Objects"), 
         React.createElement("ul", null, 
-          React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Areas")), 
+          React.createElement("li", null, React.createElement(Link, {to: "areas", params: {id: this.props.objectId}}, "Areas")), 
           React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Items")), 
           React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Monsters")), 
           React.createElement("li", null, React.createElement(Link, {to: "objects", params: {id:345}}, "Conditions")), 
@@ -30165,10 +30254,11 @@ var ObjectsMenu = React.createClass({
 
 module.exports = ObjectsMenu;
 
-},{"react":194,"react-router":16}],199:[function(require,module,exports){
+},{"react":194,"react-router":16}],202:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     TextInput = require('../util/text-input'),
+    SubmitButton = require('../util/submit-button'),
     Navigation = require('react-router').Navigation,
     Store = require('../mixins/store'),
     _ = require('lodash');
@@ -30215,13 +30305,11 @@ var Quest = React.createClass({
         React.createElement("form", {className: "pure-form pure-form-aligned", action: "quests", onSubmit: this.handleSubmit}, 
           React.createElement("fieldset", null, 
 
-            React.createElement("legend", null, "Create a New Quest"), 
+            React.createElement("legend", null, id ? "Edit" : "Create a New", " Quest"), 
             React.createElement(TextInput, {dataType: "name", data: data.name, placeholder: "Awesome Quest 2"}), 
             React.createElement(TextInput, {dataType: "goal", data: data.goal, placeholder: "Find all the gummy bears"}), 
 
-            React.createElement("div", {className: "pure-control-group"}, 
-              React.createElement("button", {type: "submit", className: "pure-button pure-button-primary"}, "Continue")
-            ), 
+            React.createElement(SubmitButton, {objectId: id}), 
 
             id ? React.createElement("input", {id: "_id", name: "_id", type: "hidden", value: id}) : ''
 
@@ -30236,7 +30324,7 @@ var Quest = React.createClass({
 
 module.exports = Quest;
 
-},{"../mixins/store":196,"../util/text-input":204,"lodash":6,"react":194,"react-router":16}],200:[function(require,module,exports){
+},{"../mixins/store":199,"../util/submit-button":207,"../util/text-input":208,"lodash":6,"react":194,"react-router":16}],203:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30272,7 +30360,7 @@ var QuestIndex = React.createClass({
 
 module.exports = QuestIndex;
 
-},{"../mixins/store":196,"../util/error":203,"./list":202,"react":194,"react-router":16}],201:[function(require,module,exports){
+},{"../mixins/store":199,"../util/error":206,"./list":205,"react":194,"react-router":16}],204:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     Router = require('react-router'),
@@ -30301,7 +30389,7 @@ var QuestItem = React.createClass({
 
 module.exports = QuestItem;
 
-},{"react":194,"react-router":16}],202:[function(require,module,exports){
+},{"react":194,"react-router":16}],205:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react'),
     QuestItem = require('./item'),
@@ -30326,7 +30414,7 @@ var QuestList = React.createClass({
 
 module.exports = QuestList;
 
-},{"./item":201,"lodash":6,"react":194}],203:[function(require,module,exports){
+},{"./item":204,"lodash":6,"react":194}],206:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 
@@ -30335,7 +30423,8 @@ var Error = React.createClass({
   displayName: 'Error',
 
   messages: {
-    questIndex: 'Could not fetch quest list from the server!'
+    questIndex: 'Could not fetch quest list from the server!',
+    areaIndex: 'Could not fetch area list from the server!'
   },
 
   getMessage: function() {
@@ -30355,7 +30444,28 @@ var Error = React.createClass({
 
 module.exports = Error;
 
-},{"react":194}],204:[function(require,module,exports){
+},{"react":194}],207:[function(require,module,exports){
+/** @jsx React.DOM */
+var React = require('react');
+
+var SubmitButton = React.createClass({
+
+  displayName: 'SubmitButton',
+
+  render: function () {
+    return (
+
+      React.createElement("div", {className: "pure-control-group"}, 
+        React.createElement("button", {type: "submit", className: "pure-button pure-button-primary"}, this.props.objectId ? "Edit" : "Create")
+      )
+
+    );
+  }
+});
+
+module.exports = SubmitButton;
+
+},{"react":194}],208:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
 

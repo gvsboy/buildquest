@@ -7,7 +7,9 @@ var React = require('react'),
 
     QuestEdit = require('./quests/edit'),
     QuestIndex = require('./quests/index'),
-    ObjectsIndex = require('./objects/index');
+    ObjectsIndex = require('./objects/index'),
+    AreaIndex = require('./areas/index'),
+    AreaEdit = require('./areas/edit');
 
 var App = React.createClass({
 
@@ -32,12 +34,14 @@ var routes = (
   <Route name="app" path="/" handler={App}>
     <Route name="quest" handler={QuestEdit}/>
     <Route name="objects" path="/objects/:id" handler={ObjectsIndex}>
+      <Route name="areas" path="/objects/:id/areas" handler={AreaIndex}/>
+      <Route name="area" path="/objects/:id/area" handler={AreaEdit}/>
       <DefaultRoute handler={QuestEdit}/>
     </Route>
     <DefaultRoute handler={QuestIndex}/>
   </Route>
 );
 
-Router.run(routes, Router.HistoryLocation, function(Handler, state) {
+Router.run(routes, function(Handler, state) {
   React.render(<Handler params={state.params}/>, document.body);
 });

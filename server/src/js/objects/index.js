@@ -12,8 +12,8 @@ var ObjectsIndex = React.createClass({
     return (
 
       <div>
-        <h2>ObjectsIndex</h2>
-        <Menu/>
+        <h2>Quest Editor</h2>
+        <Menu objectId={this.props.params.id}/>
         <RouteHandler {...this.props}/>
       </div>
 

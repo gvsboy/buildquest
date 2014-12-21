@@ -138,6 +138,12 @@ module.exports = function(grunt) {
           server: path.resolve('./server/app.js')
         }
       }
+    },
+
+    shell: {
+      dropdb: {
+        command: 'mongo bq --eval "db.dropDatabase()"'
+      }
     }
 
   });
@@ -152,6 +158,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-react');
   grunt.loadNpmTasks('grunt-responsive-images');
   grunt.loadNpmTasks('grunt-express');
+  grunt.loadNpmTasks('grunt-shell');
 
   // Detault task.
   grunt.registerTask('default', 'build:dist');

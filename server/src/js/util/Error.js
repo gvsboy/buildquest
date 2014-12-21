@@ -6,7 +6,8 @@ var Error = React.createClass({
   displayName: 'Error',
 
   messages: {
-    questIndex: 'Could not fetch quest list from the server!'
+    questIndex: 'Could not fetch quest list from the server!',
+    areaIndex: 'Could not fetch area list from the server!'
   },
 
   getMessage: function() {

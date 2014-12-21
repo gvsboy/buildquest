@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react'),
     TextInput = require('../util/text-input'),
+    SubmitButton = require('../util/submit-button'),
     Navigation = require('react-router').Navigation,
     Store = require('../mixins/store'),
     _ = require('lodash');
@@ -47,13 +48,11 @@ var Quest = React.createClass({
         <form className="pure-form pure-form-aligned" action="quests" onSubmit={this.handleSubmit}>
           <fieldset>
 
-            <legend>Create a New Quest</legend>
+            <legend>{id ? "Edit" : "Create a New"} Quest</legend>
             <TextInput dataType="name" data={data.name} placeholder="Awesome Quest 2"/>
             <TextInput dataType="goal" data={data.goal} placeholder="Find all the gummy bears"/>
 
-            <div className="pure-control-group">
-              <button type="submit" className="pure-button pure-button-primary">Continue</button>
-            </div>
+            <SubmitButton objectId={id}/>
 
             {id ? <input id="_id" name="_id" type="hidden" value={id}/> : ''}
 

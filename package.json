@@ -22,6 +22,7 @@
     "grunt-express": "^1.4.1",
     "grunt-react": "^0.10.0",
     "grunt-responsive-images": "^0.1.4",
+    "grunt-shell": "^1.1.1",
     "mongodb": "^1.4.22",
     "mongoose": "^3.8.19",
     "react": "^0.12.0",
